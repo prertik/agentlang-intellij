@@ -1,0 +1,28 @@
+<idea-plugin>
+    <id>ai.agentlang.intellij</id>
+    <name>Agentlang</name>
+    <vendor email="dev@agentlang.ai" url="https://github.com/agentlang-ai/agentlang">agentlang-ai</vendor>
+
+    <description><![CDATA[
+        <p>Agentlang support for IntelliJ-based IDEs.</p>
+        <ul>
+            <li>Syntax highlighting with the bundled TextMate grammar</li>
+            <li>Language Server Protocol features (diagnostics, completion, navigation)</li>
+        </ul>
+        <p>Requires a <code>node</code> executable on PATH to launch the language server.</p>
+    ]]></description>
+    <change-notes><![CDATA[
+        <ul>
+            <li>Initial release with TextMate highlighting and LSP integration.</li>
+        </ul>
+    ]]></change-notes>
+    <category>Languages</category>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType name="Agentlang" language="Agentlang" implementationClass="ai.agentlang.idea.AgentlangFileType" extensions="al"/>
+        <textmate.bundle file="textmate/Agentlang.tmbundle"/>
+        <lsp.serverSupportProvider implementation="ai.agentlang.idea.AgentlangLspServerSupportProvider"/>
+    </extensions>
+</idea-plugin>
