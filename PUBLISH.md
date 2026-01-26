@@ -3,7 +3,7 @@
 ## Prereqs
 
 - JetBrains Marketplace account.
-- Plugin ID matches `ai.agentlang.intellij` in `src/main/resources/META-INF/plugin.xml`.
+- Plugin ID matches `ai.agentlang` in `src/main/resources/META-INF/plugin.xml`.
 - Agentlang repo built (`npm run build`) so `out/language/main.cjs` exists.
 - `node` available on PATH.
 
