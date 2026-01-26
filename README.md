@@ -78,5 +78,8 @@ export AGENTLANG_REPO=/path/to/agentlang
 - `./gradlew` uses Gradle 8.13 via the wrapper.
 - `config.al` files use a config-specific TextMate grammar and do not attach to the LSP server.
 
+## Publishing
+See `PUBLISH.md`.
+
 ## License
 MIT
