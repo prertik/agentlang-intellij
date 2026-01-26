@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "ai.agentlang"
-version = "0.1.0"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -21,13 +21,18 @@ val ideType = providers.gradleProperty("ideType").orElse("WS")
 val ideVersion = providers.gradleProperty("ideVersion").orElse("2025.3.2")
 val ideLocalPath = providers.gradleProperty("ideLocalPath")
     .orElse(providers.environmentVariable("IDEA_HOME"))
-val defaultLocalPath = file("${System.getProperty("user.home")}/Applications/WebStorm.app/Contents")
+val osName = System.getProperty("os.name").lowercase()
+val defaultLocalPath = when {
+    osName.contains("mac") -> file("${System.getProperty("user.home")}/Applications/WebStorm.app/Contents")
+    osName.contains("linux") -> file("${System.getProperty("user.home")}/.local/share/JetBrains/Toolbox/apps/WebStorm")
+    else -> null
+}
 
 dependencies {
     intellijPlatform {
         if (ideLocalPath.isPresent) {
             local(ideLocalPath.get())
-        } else if (defaultLocalPath.exists()) {
+        } else if (defaultLocalPath?.exists() == true) {
             local(defaultLocalPath.absolutePath)
         } else {
             val version = ideVersion.get()
@@ -91,6 +96,6 @@ tasks {
 
     patchPluginXml {
         sinceBuild.set("253")
-        untilBuild.set("999.*")
+        untilBuild.set("253")
     }
 }

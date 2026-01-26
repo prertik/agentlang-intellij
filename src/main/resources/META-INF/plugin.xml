@@ -1,15 +1,16 @@
 <idea-plugin>
-    <id>ai.agentlang.intellij</id>
+    <id>ai.agentlang</id>
     <name>Agentlang</name>
-    <vendor email="dev@agentlang.ai" url="https://github.com/agentlang-ai/agentlang">agentlang-ai</vendor>
+    <vendor email="jetbrains@prertik.com" url="https://github.com/prertik/agentlang-intellij">Agentlang</vendor>
 
     <description><![CDATA[
-        <p>Agentlang support for IntelliJ-based IDEs.</p>
+        <p><a href="https://github.com/agentlang-ai/agentlang">Agentlang</a> support for IntelliJ-based IDEs.</p>
         <ul>
             <li>Syntax highlighting with the bundled TextMate grammar</li>
             <li>Language Server Protocol features (diagnostics, completion, navigation)</li>
         </ul>
         <p>Requires a <code>node</code> executable on PATH to launch the language server.</p>
+        <p>Requires <code>agentlang</code> to be cloned and available for the language server to function properly.</p>
     ]]></description>
     <change-notes><![CDATA[
         <ul>

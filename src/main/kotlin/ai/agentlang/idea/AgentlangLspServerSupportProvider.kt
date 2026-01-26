@@ -80,7 +80,7 @@ private object AgentlangLspServerExtractor {
     }
 
     private fun pluginVersion(): String {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId("ai.agentlang.intellij"))
+        val plugin = PluginManagerCore.getPlugin(PluginId.getId("ai.agentlang"))
         return plugin?.version ?: "unknown"
     }
 }
