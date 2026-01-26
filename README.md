@@ -77,3 +77,6 @@ export AGENTLANG_REPO=/path/to/agentlang
 - LSP support requires IDE 2025.3+ (the LSP API is in core and not a separate plugin).
 - `./gradlew` uses Gradle 8.13 via the wrapper.
 - `config.al` files use a config-specific TextMate grammar and do not attach to the LSP server.
+
+## License
+MIT
