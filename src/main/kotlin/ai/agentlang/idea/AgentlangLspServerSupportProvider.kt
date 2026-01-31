@@ -35,7 +35,7 @@ class AgentlangLspServerSupportProvider : LspServerSupportProvider {
 private class AgentlangLspServerDescriptor(project: Project) : LspServerDescriptor(project, "Agentlang") {
     override fun createCommandLine(): GeneralCommandLine {
         val serverPath = AgentlangLspServerExtractor.serverPath()
-        val commandLine = GeneralCommandLine(nodeExecutable(), serverPath.toString())
+        val commandLine = GeneralCommandLine(nodeExecutable(), serverPath.toString(), "--stdio")
             .withCharset(Charsets.UTF_8)
         project.basePath?.let { commandLine.withWorkDirectory(it) }
         return commandLine

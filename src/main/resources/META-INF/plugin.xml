@@ -27,6 +27,10 @@
                   extensions="al" fileNames="config.al"/>
         <fileTypeDetector implementation="ai.agentlang.idea.AgentlangFileTypeDetector"/>
         <textmate.bundleProvider implementation="ai.agentlang.idea.AgentlangTextMateBundleProvider"/>
-        <lsp.serverSupportProvider implementation="ai.agentlang.idea.AgentlangLspServerSupportProvider"/>
+        <postStartupActivity implementation="ai.agentlang.idea.AgentlangStartupActivity"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij.platform.lsp">
+        <serverSupportProvider implementation="ai.agentlang.idea.AgentlangLspServerSupportProvider"/>
     </extensions>
 </idea-plugin>
