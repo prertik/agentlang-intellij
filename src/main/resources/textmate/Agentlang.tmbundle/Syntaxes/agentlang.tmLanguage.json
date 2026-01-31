@@ -1,0 +1,47 @@
+{
+  "name": "agentlang",
+  "scopeName": "source.agentlang",
+  "fileTypes": [
+    "al"
+  ],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "name": "keyword.control.agentlang",
+      "match": "\\b(agent|agentlang/retry|allow|and|attempts|await|backoff|between|case|commitTransaction|contains|create|decision|delete|directive|else|entity|error|event|extends|false|flow|for|glossaryEntry|if|import|in|like|module|not|not_found|onSubscription|or|purge|query|read|record|relationship|resolver|return|roles|rollbackTransaction|scenario|startTransaction|subscribe|throw|true|update|upsert|where|workflow)\\b|\\B(@actions|@after|@as|@asc|@async|@before|@catch|@desc|@distinct|@enum|@expr|@from|@full_join|@groupBy|@inner_join|@into|@join|@left_join|@meta|@oneof|@orderBy|@public|@rbac|@ref|@right_join|@then|@upsert|@where|@with_unique)\\b"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.agentlang",
+          "begin": "/\\*",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.agentlang"
+            }
+          },
+          "end": "\\*/",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.agentlang"
+            }
+          }
+        },
+        {
+          "begin": "//",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.whitespace.comment.leading.agentlang"
+            }
+          },
+          "end": "(?=$)",
+          "name": "comment.line.agentlang"
+        }
+      ]
+    }
+  }
+}
