@@ -9,6 +9,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.platform.lsp.api.Lsp4jClient
+import org.eclipse.lsp4j.services.LanguageClient
+
 import com.intellij.platform.lsp.api.LspServerDescriptor
 import com.intellij.platform.lsp.api.LspServerNotificationsHandler
 import com.intellij.platform.lsp.api.LspServerSupportProvider
@@ -54,7 +56,7 @@ private class AgentlangLspServerDescriptor(project: Project) : LspServerDescript
                 handler.publishDiagnostics(params)
             }
         }
-        return Lsp4jClient(filteringHandler)
+        return AgentlangLsp4jClient(filteringHandler)
     }
 
     private fun nodeExecutable(): String {
@@ -84,6 +86,8 @@ private fun isConfigUri(uri: String): Boolean {
                 uri.endsWith("\\$AGENTLANG_CONFIG_FILE_NAME", ignoreCase = true)
     }
 }
+
+private class AgentlangLsp4jClient(handler: LspServerNotificationsHandler) : Lsp4jClient(handler)
 
 private object AgentlangLspServerExtractor {
     private val log = Logger.getInstance(AgentlangLspServerExtractor::class.java)
