@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "ai.agentlang"
-version = "0.0.1"
+version = "0.0.2"
 
 repositories {
     mavenCentral()
@@ -42,6 +42,7 @@ dependencies {
                 else -> create(ideType.get(), version)
             }
         }
+        bundledPlugin("org.jetbrains.plugins.textmate")
     }
 }
 
@@ -61,34 +62,22 @@ val agentlangRepoDir = providers.gradleProperty("agentlangRepo")
     .orElse(projectDir.resolve("../agentlang").absolutePath)
 val repoRoot = file(agentlangRepoDir.get()).canonicalFile
 val lspSource = repoRoot.resolve("out/language/main.cjs")
-val textmateSource = repoRoot.resolve("syntaxes/agentlang.tmLanguage.json")
 
 tasks {
     processResources {
         exclude("lsp/agentlang-lsp.cjs")
-        exclude("textmate/Agentlang.tmbundle/Syntaxes/agentlang.tmLanguage.json")
 
         from(lspSource) {
             into("lsp")
             rename { "agentlang-lsp.cjs" }
         }
-        from(textmateSource) {
-            into("textmate/Agentlang.tmbundle/Syntaxes")
-        }
 
         inputs.file(lspSource)
-        inputs.file(textmateSource)
         doFirst {
             if (!lspSource.exists()) {
                 error(
                     "Missing LSP server bundle at $lspSource. " +
                         "Set AGENTLANG_REPO or -PagentlangRepo, then run `npm run build` in that repo."
-                )
-            }
-            if (!textmateSource.exists()) {
-                error(
-                    "Missing TextMate grammar at $textmateSource. " +
-                        "Set AGENTLANG_REPO or -PagentlangRepo if the repo is not at ../agentlang."
                 )
             }
         }
