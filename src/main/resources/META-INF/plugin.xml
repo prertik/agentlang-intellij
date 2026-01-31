@@ -27,7 +27,6 @@
                   extensions="al" fileNames="config.al"/>
         <fileTypeDetector implementation="ai.agentlang.idea.AgentlangFileTypeDetector"/>
         <textmate.bundleProvider implementation="ai.agentlang.idea.AgentlangTextMateBundleProvider"/>
-        <postStartupActivity implementation="ai.agentlang.idea.AgentlangStartupActivity"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij.platform.lsp">
