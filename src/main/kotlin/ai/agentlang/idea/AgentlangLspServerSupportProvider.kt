@@ -8,11 +8,16 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.platform.lsp.api.Lsp4jClient
 import com.intellij.platform.lsp.api.LspServerDescriptor
+import com.intellij.platform.lsp.api.LspServerNotificationsHandler
 import com.intellij.platform.lsp.api.LspServerSupportProvider
+import org.eclipse.lsp4j.PublishDiagnosticsParams
+import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.util.concurrent.atomic.AtomicReference
 
 class AgentlangLspServerSupportProvider : LspServerSupportProvider {
@@ -21,10 +26,9 @@ class AgentlangLspServerSupportProvider : LspServerSupportProvider {
         file: VirtualFile,
         serverStarter: LspServerSupportProvider.LspServerStarter
     ) {
-        if (!isAgentlangSource(file)) {
-            return
+        if (isAgentlangSource(file)) {
+            serverStarter.ensureServerStarted(AgentlangLspServerDescriptor(project))
         }
-        serverStarter.ensureServerStarted(AgentlangLspServerDescriptor(project))
     }
 }
 
@@ -41,6 +45,18 @@ private class AgentlangLspServerDescriptor(project: Project) : LspServerDescript
 
     override fun getLanguageId(file: VirtualFile): String = "agentlang"
 
+    override fun createLsp4jClient(handler: LspServerNotificationsHandler): Lsp4jClient {
+        val filteringHandler = object : LspServerNotificationsHandler by handler {
+            override fun publishDiagnostics(params: PublishDiagnosticsParams) {
+                if (isConfigUri(params.uri)) {
+                    return
+                }
+                handler.publishDiagnostics(params)
+            }
+        }
+        return Lsp4jClient(filteringHandler)
+    }
+
     private fun nodeExecutable(): String {
         if (SystemInfo.isWindows) {
             return "node.exe"
@@ -50,10 +66,23 @@ private class AgentlangLspServerDescriptor(project: Project) : LspServerDescript
 }
 
 private fun isAgentlangSource(file: VirtualFile): Boolean {
-    if (file.extension != "al") {
+    if (file.extension?.equals("al", ignoreCase = true) != true) {
         return false
     }
-    return !file.name.equals("config.al", ignoreCase = true)
+    if (isAgentlangConfigFile(file)) {
+        return false
+    }
+    return true
+}
+
+private fun isConfigUri(uri: String): Boolean {
+    return try {
+        val fileName = Paths.get(URI(uri)).fileName?.toString()
+        fileName != null && fileName.equals(AGENTLANG_CONFIG_FILE_NAME, ignoreCase = true)
+    } catch (_: Exception) {
+        uri.endsWith("/$AGENTLANG_CONFIG_FILE_NAME", ignoreCase = true) ||
+                uri.endsWith("\\$AGENTLANG_CONFIG_FILE_NAME", ignoreCase = true)
+    }
 }
 
 private object AgentlangLspServerExtractor {
@@ -67,13 +96,11 @@ private object AgentlangLspServerExtractor {
         Files.createDirectories(targetDir)
         val targetFile = targetDir.resolve("agentlang-lsp.cjs")
 
-        if (!Files.exists(targetFile)) {
-            val resource = AgentlangLspServerExtractor::class.java.classLoader
-                .getResourceAsStream("lsp/agentlang-lsp.cjs")
-                ?: error("Agentlang LSP server resource missing")
-            resource.use { Files.copy(it, targetFile) }
-            log.info("Extracted Agentlang LSP server to $targetFile")
-        }
+        val resource = AgentlangLspServerExtractor::class.java.classLoader
+            .getResourceAsStream("lsp/agentlang-lsp.cjs")
+            ?: error("Agentlang LSP server resource missing")
+        resource.use { Files.copy(it, targetFile, StandardCopyOption.REPLACE_EXISTING) }
+        log.info("Extracted Agentlang LSP server to $targetFile")
 
         cachedPath.compareAndSet(null, targetFile)
         return targetFile

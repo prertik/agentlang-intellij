@@ -72,11 +72,13 @@ export AGENTLANG_REPO=/path/to/agentlang
 ```
 
 ## Notes
-- The build copies `out/language/main.cjs` and `syntaxes/agentlang.tmLanguage.json` into the plugin resources automatically.
+
+- The build copies `out/language/main.cjs` into the plugin resources automatically. The TextMate grammar is bundled in
+  the plugin.
 - A working `node` executable must be available on the PATH.
 - LSP support requires IDE 2025.3+ (the LSP API is in core and not a separate plugin).
 - `./gradlew` uses Gradle 8.13 via the wrapper.
-- `config.al` files use a config-specific TextMate grammar and do not attach to the LSP server.
+- `config.al` files use the same TextMate grammar as other `.al` files but do not attach to the LSP server.
 
 ## Publishing
 See `PUBLISH.md`.

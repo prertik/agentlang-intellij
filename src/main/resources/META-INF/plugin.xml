@@ -20,10 +20,13 @@
     <category>Languages</category>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>org.jetbrains.plugins.textmate</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="Agentlang" language="Agentlang" implementationClass="ai.agentlang.idea.AgentlangFileType" extensions="al"/>
-        <textmate.bundle file="textmate/Agentlang.tmbundle"/>
+        <fileType name="Agentlang" language="Agentlang" implementationClass="ai.agentlang.idea.AgentlangFileType"
+                  extensions="al" fileNames="config.al"/>
+        <fileTypeDetector implementation="ai.agentlang.idea.AgentlangFileTypeDetector"/>
+        <textmate.bundleProvider implementation="ai.agentlang.idea.AgentlangTextMateBundleProvider"/>
         <lsp.serverSupportProvider implementation="ai.agentlang.idea.AgentlangLspServerSupportProvider"/>
     </extensions>
 </idea-plugin>
