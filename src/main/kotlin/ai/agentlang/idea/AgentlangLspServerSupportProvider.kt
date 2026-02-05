@@ -8,12 +8,8 @@ import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.SystemInfo
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.platform.lsp.api.Lsp4jClient
 import com.intellij.platform.lsp.api.LspServerDescriptor
-import com.intellij.platform.lsp.api.LspServerNotificationsHandler
 import com.intellij.platform.lsp.api.LspServerSupportProvider
-import org.eclipse.lsp4j.PublishDiagnosticsParams
-import java.net.URI
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -24,7 +20,7 @@ class AgentlangLspServerSupportProvider : LspServerSupportProvider {
     override fun fileOpened(
         project: Project,
         file: VirtualFile,
-        serverStarter: LspServerSupportProvider.LspServerStarter
+        serverStarter: LspServerSupportProvider.LspServerStarter,
     ) {
         if (isAgentlangSource(file)) {
             serverStarter.ensureServerStarted(AgentlangLspServerDescriptor(project))
@@ -32,11 +28,14 @@ class AgentlangLspServerSupportProvider : LspServerSupportProvider {
     }
 }
 
-private class AgentlangLspServerDescriptor(project: Project) : LspServerDescriptor(project, "Agentlang") {
+private class AgentlangLspServerDescriptor(
+    project: Project,
+) : LspServerDescriptor(project, "Agentlang") {
     override fun createCommandLine(): GeneralCommandLine {
         val serverPath = AgentlangLspServerExtractor.serverPath()
-        val commandLine = GeneralCommandLine(nodeExecutable(), serverPath.toString(), "--stdio")
-            .withCharset(Charsets.UTF_8)
+        val commandLine =
+            GeneralCommandLine(nodeExecutable(), serverPath.toString(), "--stdio")
+                .withCharset(Charsets.UTF_8)
         project.basePath?.let { commandLine.withWorkDirectory(it) }
         return commandLine
     }
@@ -44,18 +43,6 @@ private class AgentlangLspServerDescriptor(project: Project) : LspServerDescript
     override fun isSupportedFile(file: VirtualFile): Boolean = isAgentlangSource(file)
 
     override fun getLanguageId(file: VirtualFile): String = "agentlang"
-
-    override fun createLsp4jClient(handler: LspServerNotificationsHandler): Lsp4jClient {
-        val filteringHandler = object : LspServerNotificationsHandler by handler {
-            override fun publishDiagnostics(params: PublishDiagnosticsParams) {
-                if (isConfigUri(params.uri)) {
-                    return
-                }
-                handler.publishDiagnostics(params)
-            }
-        }
-        return AgentlangLsp4jClient(filteringHandler)
-    }
 
     private fun nodeExecutable(): String {
         if (SystemInfo.isWindows) {
@@ -75,18 +62,6 @@ private fun isAgentlangSource(file: VirtualFile): Boolean {
     return true
 }
 
-private fun isConfigUri(uri: String): Boolean {
-    return try {
-        val fileName = Paths.get(URI(uri)).fileName?.toString()
-        fileName != null && fileName.equals(AGENTLANG_CONFIG_FILE_NAME, ignoreCase = true)
-    } catch (_: Exception) {
-        uri.endsWith("/$AGENTLANG_CONFIG_FILE_NAME", ignoreCase = true) ||
-                uri.endsWith("\\$AGENTLANG_CONFIG_FILE_NAME", ignoreCase = true)
-    }
-}
-
-private class AgentlangLsp4jClient(handler: LspServerNotificationsHandler) : Lsp4jClient(handler)
-
 private object AgentlangLspServerExtractor {
     private val log = Logger.getInstance(AgentlangLspServerExtractor::class.java)
     private val cachedPath = AtomicReference<Path?>()
@@ -98,9 +73,10 @@ private object AgentlangLspServerExtractor {
         Files.createDirectories(targetDir)
         val targetFile = targetDir.resolve("agentlang-lsp.cjs")
 
-        val resource = AgentlangLspServerExtractor::class.java.classLoader
-            .getResourceAsStream("lsp/agentlang-lsp.cjs")
-            ?: error("Agentlang LSP server resource missing")
+        val resource =
+            AgentlangLspServerExtractor::class.java.classLoader
+                .getResourceAsStream("lsp/agentlang-lsp.cjs")
+                ?: error("Agentlang LSP server resource missing")
         resource.use { Files.copy(it, targetFile, StandardCopyOption.REPLACE_EXISTING) }
         log.info("Extracted Agentlang LSP server to $targetFile")
 
